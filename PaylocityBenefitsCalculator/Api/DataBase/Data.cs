@@ -1,21 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using Api.Dtos.Dependent;
+﻿using Api.Dtos.Dependent;
 using Api.Dtos.Employee;
 using Api.Models;
-using Xunit;
 
-namespace ApiTests.IntegrationTests;
-
-public class EmployeeIntegrationTests : IntegrationTest
+namespace Api.Database
 {
-    [Fact]
-    public async Task WhenAskedForAllEmployees_ShouldReturnAllEmployees()
+    public static class Data
     {
-        var response = await HttpClient.GetAsync("/api/v1/employees");
-        var employees = new List<GetEmployeeDto>
+        private static List<GetEmployeeDto> Employees = new()
         {
             new()
             {
@@ -80,29 +71,46 @@ public class EmployeeIntegrationTests : IntegrationTest
                 }
             }
         };
-        await response.ShouldReturn(HttpStatusCode.OK, employees);
-    }
 
-    [Fact]
-    public async Task WhenAskedForAnEmployee_ShouldReturnCorrectEmployee()
-    {
-        var response = await HttpClient.GetAsync("/api/v1/employees/1");
-        var employee = new GetEmployeeDto
+        public static async Task<List<GetEmployeeDto>> GetAllEmployeeDtos()
         {
-            Id = 1,
-            FirstName = "LeBron",
-            LastName = "James",
-            Salary = 75420.99m,
-            DateOfBirth = new DateTime(1984, 12, 30)
-        };
-        await response.ShouldReturn(HttpStatusCode.OK, employee);
-    }
-    
-    [Fact]
-    public async Task WhenAskedForANonexistentEmployee_ShouldReturn404()
-    {
-        var response = await HttpClient.GetAsync($"/api/v1/employees/{int.MinValue}");
-        await response.ShouldReturn(HttpStatusCode.NotFound);
+            return Employees;
+        }
+
+        public static async Task<GetEmployeeDto> GetEmployeeDto(int employeeId)
+        {
+            return Employees.FirstOrDefault(x => x.Id == employeeId);
+        }
+
+        public static async Task<List<GetDependentDto>> GetAllDependentDtos()
+        {
+            return Employees.SelectMany(x => x.Dependents).ToList();
+        }
+
+        public static async Task<GetDependentDto> GetDependentDto(int dependentId)
+        {
+            return Employees.SelectMany(x => x.Dependents).FirstOrDefault(y => y.Id == dependentId);
+        }
+
+        public static async Task AddEmployeeDto(GetEmployeeDto employee)
+        {
+            Employees.Add(employee);
+        }
+
+        public static async Task AddDependentDto(int employeeId, GetDependentDto dependent)
+        {
+            GetEmployeeDto employee = await GetEmployeeDto(employeeId);
+
+            if ((dependent.Relationship == Relationship.Spouse || dependent.Relationship == Relationship.DomesticPartner) && await EmployeeHasPartner(employeeId))
+                throw new Exception($"Employee with ID {employeeId} already has a partner.");
+            else
+                employee.Dependents.Add(dependent); 
+        }
+
+        public static async Task<bool> EmployeeHasPartner(int employeeId)
+        {
+            GetEmployeeDto employee = await GetEmployeeDto(employeeId);
+            return employee.Dependents.Select(x => x).Where(y => y.Relationship == Relationship.Spouse || y.Relationship == Relationship.DomesticPartner).ToList().Count > 0;
+        }
     }
 }
-
