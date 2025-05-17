@@ -36,11 +36,11 @@ Data are stored in memory and results are provided through REST API.
 Swagger is smart tool documenting and providing easy acces to test API endpoints directly in your solution.\
 Endpoints can be tested by clicking "Try it out" at each endpoint.
 
-1.1 Start API solution using the Visual Studio **Api** button.\
-1.2 Select **Get bi-weekly salary** endpoint from **Payroll Container** and click **Try it out**.\
+1.1 Start API solution using the Visual Studio _Api_ button.\
+1.2 Select _Get bi-weekly salary_ endpoint from _Payroll Container_ and click _Try it out_.\
 1.3 Enter id between 1 and 3. If you select IDs outside of the range the solution will notify you about an error.\
-1.4 Click **Execute** button.\
-1.5 Field **Response body** under the Parameters setup will contain the solution JSON. Property data contains the calculated value.
+1.4 Click _Execute_ button.\
+1.5 Field _Response body_ under the Parameters setup will contain the solution JSON. Property data contains the calculated value.
 
 Endpoint Get monthly salary works exactly the same.
 
@@ -49,8 +49,8 @@ Endpoint Get monthly salary works exactly the same.
 Instead of Swagger you can use tools like Postman.\
 This allows you to test the solution outside so you are not biased with using the single solution.
 
-2.1 Start API solution using the Visual Studio **Api** button.\
+2.1 Start API solution using the Visual Studio _Api_ button.\
 2.2 Open Postman desktop app (localhost is not available in web app).\
-2.3 Create new request where url is **https://localhost:7124/api/v1/employees/{id}** where id is between 1 and 3 for valid result, otherwise returns error notification.\
-2.4 Click **Send** button.\
+2.3 Create new request where url is _https://localhost:7124/api/v1/employees/{id}_ where id is between 1 and 3 for valid result, otherwise returns error notification.\
+2.4 Click _Send_ button.\
 2.5 Bottom section of postman will again contain JSON file with property called data containing the result salary value.
